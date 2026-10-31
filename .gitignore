@@ -26,6 +26,7 @@ bin/
 lib/
 output/
 build/
+backup/
 
 # Системные файлы
 Thumbs.db

@@ -31,3 +31,11 @@ build/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+*.backup
+*.res
+*.lpr~
+*.pas~
+
+
+form_settings.ini

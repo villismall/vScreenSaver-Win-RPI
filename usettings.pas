@@ -71,8 +71,34 @@ begin
 end;
 
 procedure InitSettings;
+var
+  HomeDir: String;
 begin
-  GIniPath := ExtractFilePath(ParamStr(0)) + 'form_settings.ini';
+  {$IFDEF UNIX}
+  // На RPi (Debian) берём домашнюю папку пользователя: /home/villismall
+  HomeDir := GetEnvironmentVariable('HOME');
+  if HomeDir = '' then
+    HomeDir := '/home/' + GetEnvironmentVariable('USER');
+  {$ELSE}
+  // На Windows можно оставить как было или тоже в AppData — по желанию
+  HomeDir := ExtractFilePath(ParamStr(0));
+  {$ENDIF}
+
+  // Создаём путь: /home/villismall/form_settings.ini
+  GIniPath := IncludeTrailingPathDelimiter(HomeDir) + 'form_settings.ini';
+
+  // Если файла нет — создаём пустой INI, чтобы дальше не было ошибок
+  if not FileExists(GIniPath) then
+  begin
+    GIni := TIniFile.Create(GIniPath);
+    try
+      GIni.WriteString('General', 'Created', FormatDateTime('yyyy-mm-dd hh:nn:ss', Now));
+    finally
+      GIni.UpdateFile;
+      GIni.Free;
+    end;
+  end;
+
   GIni := TIniFile.Create(GIniPath);
 end;
 

@@ -7,6 +7,14 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, ExtCtrls, Graphics, uSettings, Math;
 
+{$IFDEF UNIX}
+const
+  IS_UNIX = True;
+{$ELSE}
+const
+  IS_UNIX = False;
+{$ENDIF}
+
 const
   DOT_D         = 16;
   SpawnChance   = 65;
@@ -271,6 +279,7 @@ begin
     Width  := St.saveWidth;
     Height := St.saveHeight;
   end;
+
   FOldLeft   := Left;
   FOldTop    := Top;
   FOldWidth  := Width;
@@ -278,12 +287,38 @@ begin
   FOldBorderStyle := BorderStyle;
   FSavedState := St;
   FSavedState.saveMonitor := MonIdx;
-  if St.saveIsFullScreen then
+
+  // === ГЛАВНОЕ ИЗМЕНЕНИЕ: принудительный FullScreen на UNIX (RPi) ===
+  if IS_UNIX then
   begin
-    FIsFullScreen := True;
-    BorderStyle := bsNone;
-    WindowState := wsMaximized;
+    // Если пользователь явно не отключил FullScreen в INI — включаем его принудительно
+    if not St.saveIsFullScreen then
+    begin
+      FIsFullScreen := True;
+      BorderStyle := bsNone;
+      WindowState := wsMaximized;
+      FSavedState.saveIsFullScreen := True;
+    end
+    else
+    begin
+      // Если в INI уже было FullScreen=True — просто применяем
+      FIsFullScreen := True;
+      BorderStyle := bsNone;
+      WindowState := wsMaximized;
+    end;
+  end
+  else
+  begin
+    // На Windows оставляем поведение как раньше: из INI
+    if St.saveIsFullScreen then
+    begin
+      FIsFullScreen := True;
+      BorderStyle := bsNone;
+      WindowState := wsMaximized;
+    end;
   end;
+  // =================================================================
+
   Image := TImage.Create(Self);
   Image.Parent := Self;
   Image.Align := alClient;

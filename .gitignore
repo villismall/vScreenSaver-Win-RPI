@@ -1,0 +1,33 @@
+# Исполняемые и библиотеки
+*.exe
+*.dll
+*.so
+*.a
+
+# Компилированные модули FreePascal
+*.ppu
+*.o
+*.s
+*.d
+
+# Резервные копии
+*.bak
+*.lpr.bak
+*.lpi.bak
+
+# Кэш и временные файлы Lazarus
+*.compiled
+*.local
+*.lps
+__history/
+
+# Папки сборок (если есть)
+bin/
+lib/
+output/
+build/
+
+# Системные файлы
+Thumbs.db
+desktop.ini
+.DS_Store
